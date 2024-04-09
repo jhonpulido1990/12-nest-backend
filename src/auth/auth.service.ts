@@ -4,10 +4,12 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+
+import * as bcryptjs from 'bcryptjs';
 
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
-import { Model } from 'mongoose';
 import { User } from './entities/user.entity';
 
 @Injectable()
@@ -20,8 +22,16 @@ export class AuthService {
     const newUser = new this.userModel(createUserDto);
     return newUser.save(); */
     try {
-      const newUser = new this.userModel(createUserDto);
-      return await newUser.save();
+      const { password, ...userData } = createUserDto;
+      const newUser = new this.userModel({
+        password: bcryptjs.hashSync(password, 10),
+        ...userData,
+      });
+
+      await newUser.save();
+      const { password: _, ...user } = newUser.toJSON();
+
+      return user;
     } catch (error) {
       if (error.code === 11000) {
         throw new BadRequestException(
