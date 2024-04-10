@@ -55,6 +55,11 @@ export class AuthService {
     // 3- generar el jwt
   }
 
+  async register(createUserDto: CreateUserDto): Promise<User> {
+    const user = this.create(createUserDto);
+    return { ...user, token: this.getJwtToken({ id: user }) };
+  }
+
   async login(loginDto: LoginDto): Promise<LoginResponse> {
     const { email, password } = loginDto;
     const user = await this.userModel.findOne({ email });
