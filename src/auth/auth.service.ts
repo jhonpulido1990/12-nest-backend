@@ -80,7 +80,7 @@ export class AuthService {
   }
 
   findAll() {
-    return `This action returns all auth`;
+    return this.userModel.find();
   }
 
   findOne(id: number) {

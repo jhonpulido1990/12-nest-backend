@@ -6,9 +6,12 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto, LoginDto, RegisterUserDto, UpdateAuthDto } from './dto';
+import { User } from './entities/user.entity';
+import { AuthGuard } from './guards/auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -29,8 +32,9 @@ export class AuthController {
     return this.authService.register(registerUserDto);
   }
 
+  @UseGuards(AuthGuard)
   @Get()
-  findAll() {
+  findAll(): Promise<User[]> {
     return this.authService.findAll();
   }
 
